@@ -5,7 +5,9 @@ public class EnemySpawner : MonoBehaviour
 {
 
     public Transform Player;
+    public GameObject Compass;
     public GameObject Enemy;
+    public GameObject NeedleConatiner;
     public float InitEnemyDelay = 5;
     public float EnemySpawnDistance = 60;
     public float EnemySpawnAngle = 0.4f;
@@ -27,10 +29,19 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
+
+        
+
         var position = RandomPosition();
-        GameObject enemy = (GameObject) Instantiate(Enemy, position, Quaternion.identity);
-        enemy.GetComponent<EnemyContainerController>().Player = Player;
+        var enemy = (GameObject) Instantiate(Enemy, position, Quaternion.identity);
+        var enemyContainerController = enemy.GetComponent<EnemyContainerController>();
+        enemyContainerController.Player = Player;
         lastEnemySpawned = Time.time;
+        var needleContainer = (GameObject) Instantiate(NeedleConatiner, Compass.transform.position, Quaternion.identity);
+        needleContainer.transform.parent = Compass.transform;
+        needleContainer.transform.localPosition = new Vector3();
+        needleContainer.GetComponent<NeedleContainerController>().Enemy = enemy.transform;
+        enemyContainerController.NeedleContainer = needleContainer;
     }
 
     private Vector3 RandomPosition()

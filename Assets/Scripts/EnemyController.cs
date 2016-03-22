@@ -7,6 +7,14 @@ public class EnemyController : MonoBehaviour
     public float TorqueForce = 20;
     public GameObject Container;
     public AudioSource FlickerAudioSource;
+    public bool Stop {
+        get {
+            return Container.GetComponent<EnemyContainerController>().Stop;
+        }
+        set {
+            Container.GetComponent<EnemyContainerController>().Stop = value;
+        }
+    }
 
     private Rigidbody RigidBody;
     private MeshRenderer Meshrenderer;

@@ -19,8 +19,7 @@ public class PlayerController : MonoBehaviour
     {
         if (killer == null)
             return;
-        var finalRotation = Quaternion.LookRotation(killer.position - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, TurnSpeed);
+        transform.rotation = Quaternion.LookRotation(killer.position - transform.position);
     }
     
     private float lastShot = 0;
@@ -50,6 +49,7 @@ public class PlayerController : MonoBehaviour
         var enemyController = other.GetComponent<EnemyController>();
         if (enemyController == null)
             return;
+        enemyController.Stop = true;
         DisableGyroController();
         PlayDieSound(other);
         killer = other.transform;

@@ -4,8 +4,10 @@ using System.Collections;
 public class EnemyContainerController : MonoBehaviour
 {
 
-    public Transform Player;
+    public Transform Player { get; set; }
+    public bool Stop { get; set; }
     public float InitialEnemySpeed;
+    public GameObject NeedleContainer { get; set; }
 
     private float currentEnemySpeed;
 
@@ -16,7 +18,14 @@ public class EnemyContainerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.position = Vector3.Lerp(transform.position, Player.position, currentEnemySpeed);
+        if (Stop)
+            return;
+        transform.position += (Player.position - transform.position).normalized * currentEnemySpeed;
+    }
+
+    void OnDestroy()
+    {
+        Destroy(NeedleContainer);
     }
 
 }
