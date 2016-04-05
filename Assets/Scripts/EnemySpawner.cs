@@ -4,53 +4,26 @@ using System.Collections;
 public class EnemySpawner : MonoBehaviour
 {
 
-    public Transform Player;
-    public GameObject Compass;
     public GameObject Enemy;
-    public GameObject NeedleConatiner;
-    public float InitEnemyDelay = 5;
-    public float EnemySpawnDistance = 60;
-    public float EnemySpawnAngle = 0.4f;
+    public float EnemyDelay = 2;
+    public float MinEnemyHeight = 10;
+    public float MaxEnemyHeight = 50;
+    public float EnemySpeed = 10;
+    public float EnemyDistance = 300;
+    public float RandomDirection = 10;
 
-    private float currentEnemyDelay;
-    private float lastEnemySpawned;
-
-    void Start()
-    {
-        lastEnemySpawned = Time.time;
-        currentEnemyDelay = InitEnemyDelay;
-    }
+    private float LastEnemySpawned = float.MinValue;
+    private int EnemyCounter;
 
     void Update()
     {
-        if (Time.time - lastEnemySpawned > currentEnemyDelay)
-            SpawnEnemy();
-    }
-
-    private void SpawnEnemy()
-    {
-
-        
-
-        var position = RandomPosition();
-        var enemy = (GameObject) Instantiate(Enemy, position, Quaternion.identity);
-        var enemyContainerController = enemy.GetComponent<EnemyContainerController>();
-        enemyContainerController.Player = Player;
-        lastEnemySpawned = Time.time;
-        var needleContainer = (GameObject) Instantiate(NeedleConatiner, Compass.transform.position, Quaternion.identity);
-        needleContainer.transform.parent = Compass.transform;
-        needleContainer.transform.localPosition = new Vector3();
-        needleContainer.GetComponent<NeedleContainerController>().Enemy = enemy.transform;
-        enemyContainerController.NeedleContainer = needleContainer;
-    }
-
-    private Vector3 RandomPosition()
-    {
-        return new Vector3(RandomRange(1), RandomRange(EnemySpawnAngle), RandomRange(1)).normalized * EnemySpawnDistance;
-    }
-
-    private float RandomRange(float range)
-    {
-        return Random.Range(-range, range);
+        if (Time.time - LastEnemySpawned < EnemyDelay)
+            return;
+        EnemyCounter++;
+        var randomDir = Random.insideUnitCircle.normalized * EnemyDistance;
+        var enemyPosition = new Vector3(randomDir.x, Random.Range(MinEnemyHeight, MaxEnemyHeight), randomDir.y);
+        var enemy = (GameObject) Instantiate(Enemy, enemyPosition, Quaternion.LookRotation(new Vector3(-enemyPosition.x + Random.Range(-RandomDirection, RandomDirection), 0, -enemyPosition.z + Random.Range(-RandomDirection, RandomDirection))));
+        enemy.GetComponent<EnemyController>().Speed = EnemySpeed + Random.Range(Mathf.Max(0f, EnemyCounter - 10), EnemyCounter);
+        LastEnemySpawned = Time.time;
     }
 }

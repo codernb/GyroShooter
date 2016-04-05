@@ -4,24 +4,12 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
 
-    public float TurnSpeed = 0.2f;
-    public AudioClip DieSound;
     public float ShotDelay = 0.5f;
     public GameObject Shot;
     public Transform ShotSpawner;
+    public int shotVelocityMultipier = 120;
+    public float randomValue = 10;
 
-    private Transform killer;
-    private int shotVelocityMultipier = 40;
-    private float randomValue = 0.02f;
-    private float shotSpawnerYOffset = 0.5f;
-
-    void Update()
-    {
-        if (killer == null)
-            return;
-        transform.rotation = Quaternion.LookRotation(killer.position - transform.position);
-    }
-    
     private float lastShot = 0;
     
     public void Shoot()
@@ -34,44 +22,14 @@ public class PlayerController : MonoBehaviour
     
     private void Fire()
     {
-        var shotSpawnerPositionX = Random.Range(-randomValue, randomValue);
-        var shotSpawnerPositionY = Random.Range(-randomValue, randomValue) - shotSpawnerYOffset;
-        var shotSpawnPosition = new Vector3(ShotSpawner.position.x + shotSpawnerPositionX, ShotSpawner.position.y + shotSpawnerPositionY, ShotSpawner.position.z);
-        var shot = (GameObject) Instantiate(Shot, shotSpawnPosition, ShotSpawner.rotation);
-        shot.GetComponent<Rigidbody>().velocity = (ShotSpawner.position - transform.position).normalized * shotVelocityMultipier;
+        var shot = (GameObject) Instantiate(Shot, ShotSpawner.position, ShotSpawner.rotation);
+        shot.transform.Rotate(getRandomShotDirection());
+        shot.GetComponent<Rigidbody>().velocity = shot.transform.up * shotVelocityMultipier;
     }
 
-    void OnCollisionEnter(Collision collision)
+    private Vector3 getRandomShotDirection()
     {
-        if (killer != null)
-            return;
-        var other = collision.gameObject;
-        var enemyController = other.GetComponent<EnemyController>();
-        if (enemyController == null)
-            return;
-        enemyController.Stop = true;
-        DisableGyroController();
-        PlayDieSound(other);
-        killer = other.transform;
-        StartCoroutine(Restart());
-    }
-
-    private void DisableGyroController()
-    {
-        GetComponent<GyroControlled>().enabled = false;
-    }
-
-    private void PlayDieSound(GameObject audioSource)
-    {
-        var killerAudioSource = audioSource.GetComponent<AudioSource>();
-        killerAudioSource.clip = DieSound;
-        killerAudioSource.Play();
-    }
-    
-    private IEnumerator Restart()
-    {
-        yield return new WaitForSeconds(3);
-        Application.LoadLevel(Application.loadedLevel);
+        return new Vector3(Random.Range(-randomValue, randomValue), 0, Random.Range(-randomValue, randomValue));
     }
 
 }
