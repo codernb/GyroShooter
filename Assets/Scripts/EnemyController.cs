@@ -6,11 +6,15 @@ public class EnemyController : MonoBehaviour
 
     public GameObject RadarPlane;
     public float Speed { get; set; }
+	public float Life;
+	public int Value = 10;
 
-    private Rigidbody RigidBody;
+	public float CurrentLife { get; set; }
+	private Rigidbody RigidBody;
 
     void Start()
     {
+		CurrentLife = Life;
         RigidBody = GetComponent<Rigidbody>();
         RigidBody.velocity = transform.forward * Speed;
     }
@@ -23,8 +27,26 @@ public class EnemyController : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
-        RadarPlane.SetActive(false);
-        RigidBody.useGravity = true;
+		var ShotController = collision.gameObject.GetComponent<ShotController> ();
+		if (ShotController == null)
+			return;
+		GetDamage (ShotController);
     }
+
+	private void GetDamage(ShotController shotController) {
+		var newLife = CurrentLife - shotController.Damage;
+		if (newLife > 0)
+			CurrentLife = newLife;
+		else
+			Die ();
+	}
+
+	private void Die() {
+		CurrentLife = 0;
+		RadarPlane.SetActive(false);
+		RigidBody.useGravity = true;
+		RigidBody.isKinematic = false;
+		Debug.Log (RigidBody.isKinematic);
+	}
 
 }

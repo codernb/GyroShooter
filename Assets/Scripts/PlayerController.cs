@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public int shotVelocityMultipier = 120;
     public float randomValue = 10;
 
-    private float lastShot = 0;
+	private float lastShot = float.MinValue;
     
     public void Shoot()
     {
@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     {
         var shot = (GameObject) Instantiate(Shot, ShotSpawner.position, ShotSpawner.rotation);
         shot.transform.Rotate(getRandomShotDirection());
-        shot.GetComponent<Rigidbody>().velocity = shot.transform.up * shotVelocityMultipier;
+		shot.GetComponent<Rigidbody>().velocity = shot.transform.up * shotVelocityMultipier * shot.GetComponent<ShotController>().Speet;
     }
 
     private Vector3 getRandomShotDirection()

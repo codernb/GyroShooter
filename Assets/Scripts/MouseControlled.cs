@@ -4,12 +4,15 @@ using System.Collections;
 public class MouseControlled : MonoBehaviour
 {
 
+	public GameObject Button;
+
     private PlayerController Player;
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
         Player = GetComponent<PlayerController>();
+		Button.SetActive (false);
     }
 
     void Update()
@@ -18,7 +21,7 @@ public class MouseControlled : MonoBehaviour
         oldRotation.y += Input.GetAxis("Horizontal");
         oldRotation.x -= Input.GetAxis("Vertical");
         transform.rotation = Quaternion.Euler(oldRotation);
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButton("Jump"))
             Player.Shoot();
     }
 }

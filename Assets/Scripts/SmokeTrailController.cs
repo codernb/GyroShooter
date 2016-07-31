@@ -8,7 +8,8 @@ public class SmokeTrailController : MonoBehaviour
 
     public void ReleaseFromShot()
     {
-        Smoke.enableEmission = false;
+		var emission = Smoke.emission;
+		emission.enabled = false;
         transform.parent = null;
         Destroy(gameObject, 5);
     }
